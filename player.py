@@ -1,6 +1,6 @@
 import socket
 import struct
-import rules  # Imports the 'rules.py' file
+import RULES 
 
 class Player:
     def __init__(self):
@@ -169,3 +169,4 @@ class Player:
 
 if __name__ == "__main__":
     Player().start()
+
