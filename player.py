@@ -26,6 +26,7 @@ class Player:
         try:
             udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         except AttributeError:
+            # Fallback for Windows which doesn't support SO_REUSEPORT
             udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         udp_sock.bind(("", self.udp_port))
@@ -86,8 +87,8 @@ class Player:
 
     def play_round(self, sock):
         my_cards = []
-        dealer_cards = []
-        my_turn = True
+        dealer_cards = [] 
+        my_turn = True 
         
         # Packet size is exactly 9 bytes (Header + Payload)
         msg_size = struct.calcsize(RULES.STRUCT_PAYLOAD_DEALER)
@@ -116,7 +117,7 @@ class Player:
                 card_str, card_val = RULES.parse_card(rank, suit)
                 
                 # Logic to deduce whose card it is
-                is_my_card = False
+                    is_my_card = False
                 if len(my_cards) < 2:          is_my_card = True
                 elif len(dealer_cards) < 1:    is_my_card = False
                 elif my_turn:                  is_my_card = True
@@ -128,37 +129,42 @@ class Player:
                 else:
                     dealer_cards.append(card_val)
                     print(f"Dealer received: {card_str}")
-                    
+
             except struct.error:
                 continue
             
             # STEP 4: Game Decision Logic
-            if my_turn and len(my_cards) >= 2 and len(dealer_cards) >= 1:
-                my_sum = self.calculate_sum(my_cards)
-                
-                if my_sum > 21:
-                    print(f"Bust! Total: {my_sum}")
-                    my_turn = False 
-                    # Server will send Loss packet next
-                else:
-                    print(f"Your Hand Total: {my_sum}")
-                    move = input("Action (h/s): ").lower()
+                if my_turn and len(my_cards) >= 2 and len(dealer_cards) >= 1:
+                    my_sum = self.calculate_sum(my_cards)
                     
-                    action_str = RULES.ACTION_STAND
-                    if move == 'h':
-                        action_str = RULES.ACTION_HIT
+                    if my_sum > 21:
+                        print(f"Bust! Total: {my_sum}")
+                        my_turn = False 
+                        # Server will send Loss packet next
                     else:
-                        my_turn = False
+                        print(f"Your Hand Total: {my_sum}")
+                        move = input("Action (h/s): ").lower()
                         
-                    decision_packet = struct.pack(
+                    action_str = RULES.ACTION_STAND
+                        if move == 'h':
+                        action_str = RULES.ACTION_HIT
+                        else:
+                            my_turn = False
+                            
+                        # Send Decision
+                        decision_packet = struct.pack(
                         RULES.STRUCT_PAYLOAD_PLAYER,
                         RULES.MAGIC_COOKIE,
                         RULES.MSG_TYPE_PAYLOAD,
-                        action_str.encode('utf-8')
-                    )
-                    sock.sendall(decision_packet)
+                            action_str.encode('utf-8')
+                        )
+                        sock.sendall(decision_packet)
+
+            except struct.error:
+                continue
 
     def calculate_sum(self, cards):
+        # Helper for Client UI (matches server logic)
         total = sum(cards)
         aces = cards.count(11)
         while total > 21 and aces > 0:
@@ -168,3 +174,4 @@ class Player:
 
 if __name__ == "__main__":
     Player().start()
+
