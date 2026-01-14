@@ -10,32 +10,31 @@ class Player:
         # A persistent buffer to store data across TCP stream reads (per connection)
         self.internal_buffer = b""
 
-        # Timeouts (use RULES constants if they exist, otherwise use safe defaults)
-        self.udp_timeout = getattr(RULES, "UDP_TIMEOUT", 3)
-        self.tcp_connect_timeout = getattr(RULES, "TCP_CONNECT_TIMEOUT", 5)
-        self.tcp_recv_timeout = getattr(RULES, "TCP_RECV_TIMEOUT", 10)
+        # Timeouts
+        self.udp_timeout = RULES.UDP_TIMEOUT
+        self.tcp_connect_timeout = RULES.TCP_CONNECT_TIMEOUT
+        self.tcp_recv_timeout = RULES.TCP_RECV_TIMEOUT
 
     def start(self):
         """
         Main client loop.
-        According to the assignment: the client should run forever and after finishing a game
-        it should immediately return to listening for offers again.
+        The client run forever and after finishing a game it immediately return to listening for offers again.
         """
         print("Client started, listening for offer requests...")
 
         while True:
-            # 1. Get User Input (every new game)
+            # Get User Input (every new game)
             try:
                 rounds_input = input("How many rounds to play? ")
                 rounds = int(rounds_input)
             except ValueError:
                 print("Invalid number.")
-                continue  # do not exit; ask again
+                continue  # do not exit, ask again
 
             # Reset buffer for a NEW TCP session (important!)
             self.internal_buffer = b""
 
-            # 2. UDP Discovery (Listen for Offer)
+            # UDP Discovery (Listen for Offer)
             udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
             # Cross-platform compatibility for Port Reuse
@@ -72,7 +71,7 @@ class Player:
 
             udp_sock.close()
 
-            # 3. TCP Connection + Play
+            # TCP Connection + Play
             if dealer_ip and dealer_port:
                 self.connect_and_play(dealer_ip, dealer_port, rounds)
 
@@ -88,7 +87,7 @@ class Player:
             tcp_sock.settimeout(self.tcp_connect_timeout)
             tcp_sock.connect((ip, port))
 
-            # After connect, we can use a receive timeout too
+            # After connect we use a receive timeout
             tcp_sock.settimeout(self.tcp_recv_timeout)
 
             # Send Request
@@ -126,8 +125,7 @@ class Player:
     def play_round(self, sock):
         """
         Plays a single round.
-        Keeps your original logic:
-        - reads dealer packets using an internal buffer (TCP stream-safe)
+        - reads dealer packets using an internal buffer
         - prints cards and hand total before asking for h/s
         - sends "Hittt" / "Stand" decisions using the protocol format
         """
@@ -138,7 +136,7 @@ class Player:
         msg_size = struct.calcsize(RULES.STRUCT_PAYLOAD_DEALER)
 
         while True:
-            # STEP 1: Ensure we have at least one full packet in the buffer
+            # Ensure we have at least one full packet in the buffer
             while len(self.internal_buffer) < msg_size:
                 try:
                     data = sock.recv(RULES.BUFFER_SIZE)
@@ -151,11 +149,11 @@ class Player:
 
                 self.internal_buffer += data
 
-            # STEP 2: Pop exactly one packet from the front
+            # Pop exactly one packet from the front
             packet = self.internal_buffer[:msg_size]
             self.internal_buffer = self.internal_buffer[msg_size:]
 
-            # STEP 3: Process the packet
+            # Process the packet
             try:
                 cookie, mtype, result, rank, suit = struct.unpack(RULES.STRUCT_PAYLOAD_DEALER, packet)
                 if cookie != RULES.MAGIC_COOKIE:
@@ -168,7 +166,7 @@ class Player:
                 # Parse card
                 card_str, card_val = RULES.parse_card(rank, suit)
 
-                # Logic to deduce whose card it is (same as your original)
+                # Logic to deduce whose card it is
                 is_my_card = False
                 if len(my_cards) < 2:
                     is_my_card = True
@@ -186,7 +184,7 @@ class Player:
                     dealer_cards.append(card_val)
                     print(f"Dealer received: {card_str}")
 
-                # STEP 4: Game Decision Logic (same as your original, with input validation)
+                # Game Decision Logic
                 if my_turn and len(my_cards) >= 2 and len(dealer_cards) >= 1:
                     my_sum = self.calculate_sum(my_cards)
 
