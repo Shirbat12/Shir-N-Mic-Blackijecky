@@ -186,7 +186,7 @@ class Player:
 
                 # Game Decision Logic
                 if my_turn and len(my_cards) >= 2 and len(dealer_cards) >= 1:
-                    my_sum = self.calculate_sum(my_cards)
+                    my_sum = sum(my_cards)
 
                     if my_sum > 21:
                         print(f"Bust! Total: {my_sum}")
@@ -217,17 +217,6 @@ class Player:
                 print(f"Struct error: {e}")
                 continue
 
-    def calculate_sum(self, cards):
-        """
-        Helper for Client UI.
-        Aces are stored as 11, then reduced to 1 if we bust.
-        """
-        total = sum(cards)
-        aces = cards.count(11)
-        while total > 21 and aces > 0:
-            total -= 10
-            aces -= 1
-        return total
 
 
 if __name__ == "__main__":
