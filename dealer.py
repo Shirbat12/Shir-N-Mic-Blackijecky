@@ -13,7 +13,7 @@ class Dealer:
         self.server_ip = self.get_local_ip()
         self.running = True
 
-        # Timeouts (use RULES constants if they exist, otherwise use safe defaults)
+        # Timeouts 
         self.udp_timeout = RULES.UDP_TIMEOUT
         self.tcp_recv_timeout = RULES.TCP_RECV_TIMEOUT
 
