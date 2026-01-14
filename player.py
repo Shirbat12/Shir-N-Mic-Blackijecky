@@ -20,7 +20,7 @@ class Player:
         Main client loop.
         The client run forever and after finishing a game it immediately return to listening for offers again.
         """
-        print("Client started, listening for offer requests...")
+        print("Listening for offer requests...I am ready to kick some ass")
 
         while True:
             # Get User Input (every new game)
@@ -54,7 +54,7 @@ class Player:
                 try:
                     data, addr = udp_sock.recvfrom(RULES.BUFFER_SIZE)
                 except socket.timeout:
-                    print("Still waiting for offers...")
+                    print("Still waiting for offers...Arent there any dealers??")
                     continue
 
                 try:
@@ -106,12 +106,12 @@ class Player:
                 res = self.play_round(tcp_sock)
 
                 if res == RULES.RESULT_WIN:
-                    print("Result: You Won!")
+                    print("HURRAY!! You Won!")
                     wins += 1
                 elif res == RULES.RESULT_LOSS:
-                    print("Result: You Lost.")
+                    print("AWWW You Lost.")
                 else:
-                    print("Result: Tie.")
+                    print("Looks like its a Tie.")
 
             # Avoid division by zero if rounds is 0
             win_rate = (wins / rounds) if rounds > 0 else 0
@@ -189,16 +189,16 @@ class Player:
                     my_sum = sum(my_cards)
 
                     if my_sum > 21:
-                        print(f"Bust! Total: {my_sum}")
+                        print(f"Dang wrong choice! Total: {my_sum}")
                         my_turn = False
                         # Wait for server to send the final Loss packet
                     elif is_my_card or (len(my_cards) == 2 and len(dealer_cards) == 1):
-                        print(f"Your Hand Total: {my_sum}")
+                        print(f"You now have: {my_sum}")
 
                         # Validate user input: only h/s allowed
                         move = ""
                         while move not in ("h", "s"):
-                            move = input("Action (h/s): ").strip().lower()
+                            move = input("DO YOU HIT OR STAND? (h/s): ").strip().lower()
 
                         action_str = RULES.ACTION_HIT if move == "h" else RULES.ACTION_STAND
                         if move == "s":
