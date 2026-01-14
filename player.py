@@ -25,7 +25,7 @@ class Player:
         while True:
             # Get User Input (every new game)
             try:
-                rounds_input = input("How many rounds to play? ")
+                rounds_input = input("How many rounds would you like to play? Dont be weak, lets play!")
                 rounds = int(rounds_input)
             except ValueError:
                 print("Invalid number.")
@@ -54,7 +54,7 @@ class Player:
                 try:
                     data, addr = udp_sock.recvfrom(RULES.BUFFER_SIZE)
                 except socket.timeout:
-                    print("Still waiting for offers...Arent there any dealers??")
+                    print("Still waiting for offers...Arent there any dealers around??")
                     continue
 
                 try:

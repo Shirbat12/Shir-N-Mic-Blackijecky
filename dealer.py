@@ -8,7 +8,7 @@ import RULES
 
 class Dealer:
     def __init__(self):
-        self.team_name = "MR.Dealer"
+        self.team_name = "MR.DR.AwesomeDealer"
         self.tcp_port = 0   # OS assigns a free port
         self.server_ip = self.get_local_ip()
         self.running = True
@@ -121,13 +121,13 @@ class Dealer:
                 return
 
             player_name = RULES.decode_string(name_bytes)
-            print(f"Looks like team {player_name} joined for {rounds} rounds")
+            print(f"Looks like team {player_name} joined for {rounds} rounds, lets see how that goes")
 
             # Play the requested number of rounds
             for _ in range(rounds):
                 self.play_round(player_socket)
 
-            print(f"Finished playing {rounds} rounds with {player_name}.")
+            print(f"Finished playing {rounds} rounds with {player_name}. Ok team, might play again...")
 
         except (socket.timeout, ConnectionError) as e:
             print(f"Player handler timeout/disconnect: {e}")
