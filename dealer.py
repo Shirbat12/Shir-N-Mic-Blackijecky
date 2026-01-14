@@ -8,16 +8,16 @@ import RULES
 class Dealer:
     def __init__(self):
         self.team_name = "BlackjackDealer"
-        self.tcp_port = 0   # OS will assign a free port
+        self.tcp_port = 0   # OS assigns a free port
         self.server_ip = self.get_local_ip()
         self.running = True
         
-        # 1. Setup UDP Socket (For Broadcasting Offers)
+        # Setup UDP socket for broadcasting offers - IPV4, UDP
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # Enable broadcasting mode to send to everyone on the network
+        # Enable broadcasting mode
         self.udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         
-        # 2. Setup TCP Socket (For Game Connections)
+        # Setup TCP socket - IPV4, TCP
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Bind to port 0: Let the OS choose an available port
         self.tcp_socket.bind(('', 0)) 
@@ -29,7 +29,7 @@ class Dealer:
 
     def get_local_ip(self):
         """
-        Helper method to find the machine's actual IP address 
+        Helper method to find the machine's actual IP address
         by connecting to an external server (Google DNS).
         """
         try:
@@ -39,7 +39,7 @@ class Dealer:
             s.close()
             return ip
         except Exception:
-            return "127.0.0.1"
+            return "127.0.0.1" # local host IP
 
     def start(self):
         """Main server loop."""
@@ -74,7 +74,7 @@ class Dealer:
         
         while self.running:
             try:
-                # Send to the broadcast address (255.255.255.255)
+                # Send to the broadcast address
                 self.udp_socket.sendto(packet, (RULES.BROADCAST_IP, RULES.UDP_PORT))
                 time.sleep(1) 
             except Exception as e:
@@ -86,7 +86,8 @@ class Dealer:
             # 1. Receive the initial Request packet
             # The code waits here (blocks) until data arrives. No busy waiting.
             data = player_socket.recv(RULES.BUFFER_SIZE)
-            if not data: return
+            if not data:
+                return
             
             # Unpack the binary data
             cookie, msg_type, rounds, name_bytes = struct.unpack(RULES.STRUCT_REQUEST, data)
