@@ -1,11 +1,11 @@
 import struct
 
 """
-Shared protocol definitions for the Blackijecky game.
+Shared protocol definitions for the Blackijecky game :-)
 All constants and packet formats are defined here.
 """
 
-# ---------------- Network Configuration ----------------
+# Network Configuration
 UDP_PORT = 13122
 BUFFER_SIZE = 1024
 BROADCAST_IP = '<broadcast>'
@@ -14,10 +14,10 @@ UDP_TIMEOUT = 3
 TCP_CONNECT_TIMEOUT = 5
 TCP_RECV_TIMEOUT = 60
 
-# ---------------- Dealer Rules ----------------
+# Dealer Rules
 DEALER_STANDS_ON = 17
 
-# ---------------- Protocol Constants ----------------
+# Protocol Constants
 MAGIC_COOKIE = 0xabcddcba
 
 MSG_TYPE_OFFER = 0x2
@@ -32,7 +32,7 @@ RESULT_LOSS = 0x2
 RESULT_TIE = 0x1
 RESULT_PLAYING = 0x0
 
-# ---------------- Struct Formats ----------------
+# Struct Formats
 STRUCT_OFFER = '!IBH32s'
 STRUCT_REQUEST = '!IBB32s'
 STRUCT_PAYLOAD_PLAYER = '!IB5s'
