@@ -156,7 +156,7 @@ class Dealer:
         player_busted = False
         while True:
             # Calculate player's hand
-            if self.calculate_sum(player_cards) > 21:
+            if sum(player_cards) > 21:
                 player_busted = True
                 break  # Player lost (Bust)
 
@@ -187,7 +187,7 @@ class Dealer:
                 break
 
         # Dealer Turn
-        dealer_sum = self.calculate_sum(dealer_cards)
+        dealer_sum = sum(dealer_cards)
 
         # Only play dealer turn if player did not bust
         if not player_busted:
@@ -197,11 +197,11 @@ class Dealer:
             while dealer_sum < 17:
                 new_card = deck.pop()
                 dealer_cards.append(new_card)
-                dealer_sum = self.calculate_sum(dealer_cards)
+                dealer_sum = sum(dealer_cards)
                 self.send_card(player_socket, new_card)
 
         # Determine Winner
-        player_sum = self.calculate_sum(player_cards)
+        player_sum = sum(player_cards)
         result = RULES.RESULT_TIE
 
         if player_sum > 21:
@@ -222,25 +222,6 @@ class Dealer:
         deck = [(r, s) for r in range(1, 14) for s in range(4)]
         random.shuffle(deck)
         return deck
-
-    def calculate_sum(self, cards):
-        """Calculates hand value, handling Aces (1 or 11)."""
-        total = 0
-        aces = 0
-        for rank, _ in cards:
-            if rank == 1:  # Ace
-                aces += 1
-                total += 11
-            elif rank >= 10:  # Face cards (J, Q, K)
-                total += 10
-            else:
-                total += rank
-
-        # Adjust Aces if total > 21
-        while total > 21 and aces > 0:
-            total -= 10
-            aces -= 1
-        return total
 
     def send_card(self, player_socket, card):
         """Helper to send a card packet (Result=Playing)."""
