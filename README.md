@@ -14,7 +14,7 @@ The system consists of a **Server** (Dealer) that manages the game logic and **C
 
 ## Project Structure
 
-We organized the code into 3 separate files to ensure separation of concerns and code reusability:
+We organized the code into 3 separate files:
 
 1. **`RULES.py` (Constants file)**
 
